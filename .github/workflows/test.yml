@@ -43,5 +43,5 @@ jobs:
         run: |
           for %%f in (Shaders\*.fx) do (
             echo Compiling %%f
-            external\ReShade\bin\Win32\Release\ReShadeFXC.exe "%%f"
+            D:\a\reshade-shaders\reshade-shaders\external\ReShade\bin\Win32\Release\fxc.exe "%%f"
           )
