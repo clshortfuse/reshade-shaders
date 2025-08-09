@@ -39,6 +39,7 @@ jobs:
           curl -o Shaders/ReShadeUI.fxh https://raw.githubusercontent.com/crosire/reshade-shaders/refs/heads/slim/Shaders/ReShadeUI.fxh
 
       - name: Compile Shaders
+        shell: cmd
         run: |
           for %%f in (Shaders\*.fx) do (
             echo Compiling %%f
