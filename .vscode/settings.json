@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "*.fx": "slang",
+    "*.fxh": "slang",
+  },
+  "slang.format.clangFormatFallbackStyle": "{ BasedOnStyle: Google, ColumnLimit: 0 }",
+}

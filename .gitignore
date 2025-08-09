@@ -1,0 +1,13 @@
+# ReShade Headers
+Reshade.fxh
+ReshadeUI.fxh
+
+# WSL Zone Identifier
+**/*Zone.Identifier
+
+# MacOS
+**/.DS_Store
+
+# VSCode
+**/.vshistory/
+.cache/**
