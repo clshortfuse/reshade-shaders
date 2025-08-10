@@ -1,3 +1,5 @@
+[![ReShade FXC](https://github.com/clshortfuse/reshade-shaders/actions/workflows/reshade-fxc.yml/badge.svg)](https://github.com/clshortfuse/reshade-shaders/actions/workflows/reshade-fxc.yml/badge.svg)
+
 ReShade FX shaders
 ==================
 
