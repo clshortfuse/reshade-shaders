@@ -1,4 +1,4 @@
-name: ReShade FXC
+name: ReShade v6.5.1
 
 on:
   push:
@@ -15,11 +15,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
-      - name: Fetch only ReShade tags (no submodules)
-        run: git -C external/ReShade fetch --no-recurse-submodules --tags
+      - name: Clone ReShade repository and checkout tag v6.5.1
+        run: |
+          git clone --recursive https://github.com/crosire/ReShade.git ReShade
+          cd ReShade
+          git fetch --tags
+          git checkout v6.5.1
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -31,7 +33,7 @@ jobs:
 
       - name: Build ReShade FXC
         run: |
-          msbuild external/ReShade/ReShadeFXC.vcxproj /p:Configuration=Release
+          msbuild ReShade/ReShadeFXC.vcxproj /p:Configuration=Release
 
       # Download Reshade.fxh and ReshadeUI.fxh to Shaders folder
       # https://raw.githubusercontent.com/crosire/reshade-shaders/refs/heads/slim/Shaders/ReShade.fxh
@@ -46,5 +48,5 @@ jobs:
         run: |
           for %%f in (Shaders\*.fx) do (
             echo Compiling %%f
-            D:\a\reshade-shaders\reshade-shaders\external\ReShade\bin\Win32\Release\fxc.exe "%%f"
+            ReShade\bin\Win32\Release\fxc.exe "%%f"
           )

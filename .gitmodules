@@ -1,3 +1,0 @@
-[submodule "external/ReShade"]
-	path = external/ReShade
-	url = https://github.com/crosire/ReShade.git
