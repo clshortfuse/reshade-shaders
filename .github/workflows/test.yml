@@ -18,8 +18,8 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Fetch tags in submodules
-        run: git submodule foreach 'git fetch --tags'
+      - name: Fetch tags for ReShade submodule
+        run: git -C external/ReShade fetch --tags
 
       - name: Set up Python
         uses: actions/setup-python@v5
