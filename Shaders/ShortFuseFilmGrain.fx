@@ -67,7 +67,7 @@ float3 computeFilmGrain(float3 color, float2 xy, float seed, float strength,
   return outputColor;
 }
 
-#ifdef __RESHADE_FXC__
+#ifdef __RESHADE__
 uniform float FILM_GRAIN_STRENGTH < ui_type = "slider";
 ui_min = 0;
 ui_max = 100;
@@ -124,7 +124,7 @@ float3 main(float4 pos: SV_Position, float2 texcoord: TexCoord) : COLOR {
   return output_color;
 }
 
-#ifdef __RESHADE_FXC__
+#ifdef __RESHADE__
 technique ShortFuseFilmGrain {
   pass {
     VertexShader = PostProcessVS;
