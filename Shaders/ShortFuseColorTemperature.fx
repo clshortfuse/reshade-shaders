@@ -5,20 +5,20 @@
 uniform uint KELVIN_METHOD < ui_type = "combo";
 ui_label = "Method";
 ui_items =
-    "Blackbody (CCT, Planckian)\0"
-    "Daylight (CIE D, Judd 1964)\0";
+    "Blackbody (CCT, Krystek 1985)\0"
+    "Daylight (CIE D, Judd 1964)\0"
 > = 0u;
 
 uniform float KELVIN_INPUT < ui_type = "slider";
-ui_min = 0000;
-ui_max = 13000;
+ui_min = 1000;
+ui_max = 15000;
 ui_step = 1;
 ui_label = "Input Temperature";
 > = 6500;
 
 uniform float KELVIN_OUTPUT < ui_type = "slider";
-ui_min = 0000;
-ui_max = 13000;
+ui_min = 1000;
+ui_max = 15000;
 ui_step = 1;
 ui_label = "Output Temperature";
 > = 6500;
@@ -40,7 +40,9 @@ hidden = true;
 #define SDR_EOTF      1u
 #endif
 
-float2 KelvinToCCT1960UCSXY(float K) {
+float2 KelvinToKrystek1985UCSXY(float K) {
+  K = clamp(K, 1000.0, 15000.0);
+
   // temperature to CIE 1960
   const float K2 = K * K;
   const float u = (0.860117757f + 1.54118254e-4f * K + 1.28641212e-7f * K2)
@@ -69,7 +71,7 @@ float3 KelvinToWhiteXYZ(float T) {
   switch (KELVIN_METHOD) {
     default:
     case 0u:
-      xy = KelvinToCCT1960UCSXY(T);
+      xy = KelvinToKrystek1985UCSXY(T);
       break;
     case 1u:
       xy = KelvinToCIEJudd1964IlluminantDXY(T);
