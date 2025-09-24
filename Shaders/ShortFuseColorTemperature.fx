@@ -1,21 +1,81 @@
 #include "ShortFuse.fxh"
 
-// Convert Kelvin temperature to CIE 1931 XYZ white point (daylight locus approximation)
-// eg: 6500 returns float3(0.95047, 1.00000, 1.08883)
-float3 KelvinToWhiteXYZ(float T) {
-  // T = clamp(T, 4000.0, 25000.0);
+#ifdef __RESHADE__
+
+uniform uint KELVIN_METHOD < ui_type = "combo";
+ui_label = "Method";
+ui_items =
+    "Blackbody (CCT, Planckian)\0"
+    "Daylight (CIE D, Judd 1964)\0";
+> = 0u;
+
+uniform float KELVIN_INPUT < ui_type = "slider";
+ui_min = 0000;
+ui_max = 13000;
+ui_step = 1;
+ui_label = "Input Temperature";
+> = 6500;
+
+uniform float KELVIN_OUTPUT < ui_type = "slider";
+ui_min = 0000;
+ui_max = 13000;
+ui_step = 1;
+ui_label = "Output Temperature";
+> = 6500;
+
+uniform uint SDR_EOTF < ui_type = "combo";
+ui_label = "SDR EOTF";
+ui_items =
+    "sRGB\0"
+    "2.2\0" "2.4\0";
+#ifndef IS_SDR
+hidden = true;
+#endif
+> = 1u;
+
+#else
+#define KELVIN_METHOD 0u
+#define KELVIN_INPUT  6500.f
+#define KELVIN_OUTPUT 6500.f
+#define SDR_EOTF      1u
+#endif
+
+float2 KelvinToCCT1960UCSXY(float K) {
+  // temperature to CIE 1960
+  const float K2 = K * K;
+  const float u = (0.860117757f + 1.54118254e-4f * K + 1.28641212e-7f * K2)
+                  / (1.0f + 8.42420235e-4f * K + 7.08145163e-7f * K2);
+  const float v = (0.317398726f + 4.22806245e-5f * K + 4.20481691e-8f * K2)
+                  / (1.0f - 2.89741816e-5f * K + 1.61456053e-7f * K2);
+
+  const float d = 1.0f / (2.0f * u - 8.0f * v + 4.0f);
+  return float2(3.0f * u * d, 2.0f * v * d);
+}
+
+float2 KelvinToCIEJudd1964IlluminantDXY(float T) {
+  T = clamp(T, 4000.0, 25000.0);
 
   float x_D = (T <= 7000.0)
                   ? (-4.6070e9 / (T * T * T)) + (2.9678e6 / (T * T)) + (99.11 / T) + 0.244063
                   : (-2.0064e9 / (T * T * T)) + (1.9018e6 / (T * T)) + (247.48 / T) + 0.237040;
 
   float y_D = (-3.0 * x_D * x_D) + (2.87 * x_D) - 0.275;
+  return float2(x_D, y_D);
+}
 
-  float Y = 1.0;
-  float X = x_D / y_D;
-  float Z = (1.0 - x_D - y_D) / y_D;
-
-  return float3(X, Y, Z);
+float3 KelvinToWhiteXYZ(float T) {
+  float2 xy;
+  [branch]
+  switch (KELVIN_METHOD) {
+    default:
+    case 0u:
+      xy = KelvinToCCT1960UCSXY(T);
+      break;
+    case 1u:
+      xy = KelvinToCIEJudd1964IlluminantDXY(T);
+      break;
+  }
+  return color::xyYToXYZ(float3(xy, 1.0));
 }
 
 // Build Bradford chromatic adaptation matrix from source to target white point
@@ -32,7 +92,7 @@ float3x3 ChromaticAdaptationMatrix(float3 srcWhiteXYZ, float3 dstWhiteXYZ) {
 
   float3 srcLMS = mul(M_Bradford, srcWhiteXYZ);
   float3 dstLMS = mul(M_Bradford, dstWhiteXYZ);
-  float3 scale = dstLMS / max(srcLMS, 1e-5); // Safe division
+  float3 scale = dstLMS / max(srcLMS, 1e-5);  // Safe division
 
   float3x3 ScaleMatrix = float3x3(
       scale.x, 0, 0,
@@ -50,37 +110,6 @@ float3 AdaptXYZKelvin(float3 inputXYZ, float srcKelvin, float dstKelvin) {
   float3x3 adaptation = ChromaticAdaptationMatrix(srcWhiteXYZ, dstWhiteXYZ);
   return mul(adaptation, inputXYZ);
 }
-
-#ifdef __RESHADE__
-
-uniform float KELVIN_INPUT < ui_type = "slider";
-ui_min = 1500;
-ui_max = 10000;
-ui_step = 1;
-ui_label = "Input Temperature";
-> = 6500;
-
-uniform float KELVIN_OUTPUT < ui_type = "slider";
-ui_min = 1500;
-ui_max = 10000;
-ui_step = 1;
-ui_label = "Output Temperature";
-> = 6500;
-
-uniform uint SDR_EOTF < ui_type = "combo";
-ui_label = "SDR EOTF";
-ui_items =
-    "sRGB\0"
-    "2.2\0" "2.4\0";
-#ifndef IS_SDR
-hidden = true;
-#endif
-> = 1u;
-
-#else
-#define KELVIN_OUTPUT 6500.f
-#define SDR_EOTF      1u
-#endif
 
 #define DIFFUSE_WHITE_NITS 203.f
 

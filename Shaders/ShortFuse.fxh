@@ -39,6 +39,16 @@ static const float3x3 XYZ_TO_BT2020_MAT = float3x3(
     1.7166511880f, -0.3556707838f, -0.2533662814f,
     -0.6666843518f, 1.6164812366f, 0.0157685458f,
     0.0176398574f, -0.0427706133f, 0.9421031212f);
+
+float3 xyYToXYZ(float3 xyY) {
+  float3 XYZ;
+
+  XYZ.xz = float2(xyY.x, (1.f - xyY.xy.x - xyY.xy.y)) / xyY.y * xyY[2];
+
+  XYZ.y = xyY[2];
+
+  return XYZ;
+}
 }
 
 namespace math {
