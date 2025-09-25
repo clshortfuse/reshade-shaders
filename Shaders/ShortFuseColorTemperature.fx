@@ -1,6 +1,6 @@
 #include "ShortFuse.fxh"
 
-#ifdef IS_RESHADE
+#ifdef __RESHADE__
 
 uniform uint KELVIN_METHOD < ui_type = "combo";
 ui_label = "Method";
@@ -139,7 +139,7 @@ float3 main(float4 pos: SV_Position, float2 texcoord: TexCoord) : COLOR {
   return output_color;
 }
 
-#ifdef IS_RESHADE
+#ifdef __RESHADE__
 technique ShortFuseColorTemperature {
   pass {
     VertexShader = PostProcessVS;

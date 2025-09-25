@@ -3,10 +3,6 @@
 #include "ReShade.fxh"
 #include "ReShadeUI.fxh"
 
-#if (defined(__RESHADE__) || defined(__RESHADE_FXC__))
-#define IS_RESHADE
-#endif
-
 #define COLOR_SPACE_UNKNOWN   0u
 #define COLOR_SPACE_SRGB      1u
 #define COLOR_SPACE_SCRGB     2u
