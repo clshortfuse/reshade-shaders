@@ -1,12 +1,11 @@
 #include "ShortFuse.fxh"
 
-#ifdef __RESHADE__
+#ifdef IS_RESHADE
 
 uniform uint KELVIN_METHOD < ui_type = "combo";
 ui_label = "Method";
 ui_items =
-    "Blackbody (CCT, Krystek 1985)\0"
-    "Daylight (CIE D, Judd 1964)\0"
+    "Blackbody (CCT, Krystek 1985)\0" "Daylight (CIE D, Judd 1964)\0";
 > = 0u;
 
 uniform float KELVIN_INPUT < ui_type = "slider";
@@ -140,7 +139,7 @@ float3 main(float4 pos: SV_Position, float2 texcoord: TexCoord) : COLOR {
   return output_color;
 }
 
-#ifdef __RESHADE__
+#ifdef IS_RESHADE
 technique ShortFuseColorTemperature {
   pass {
     VertexShader = PostProcessVS;
