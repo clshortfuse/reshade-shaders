@@ -8,7 +8,7 @@ This repository aims to collect post-processing shaders written in the ReShade F
 Installation
 ------------
 
-1. [Download](https://github.com/crosire/reshade-shaders/archive/master.zip) this repository
+1. [Download](https://github.com/clshortfuse/reshade-shaders/archive/refs/heads/main.zip) this repository
 2. Extract the downloaded archive file somewhere
 3. Start your game, open the ReShade in-game menu and switch to the "Settings" tab
 4. Add the path to the extracted [Shaders](/Shaders) folder to "Effect Search Paths"
